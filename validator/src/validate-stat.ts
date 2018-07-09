@@ -1,8 +1,24 @@
 import { validateData } from "./validate-data";
 import { validateSource } from "./validate-source";
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { take, concatMap, map } from 'rxjs/operators'
 
-export function validateStat(obj: any, hashResolver?: (hash: string) => Observable<any>): Observable<string> | string {
+export function validateStatAsync(obj: any, hashResolver: (hash: string) => Observable<any>): Observable<string> {
+    var syncResult = validateStat(obj);
+    if (syncResult) {
+        return of(syncResult);
+    } 
+    if (typeof obj.source == "string" && /^[0-9a-zA-Z]{46}/.test(obj.source)) {
+        return hashResolver(obj.source).pipe(
+            take(1),
+            concatMap(obj => validateSource(obj))
+        )
+    }
+    return of(null);
+}
+
+
+export function validateStat(obj: any): string {
     if (typeof obj != "object") {
         return "not an object"
     }
@@ -104,16 +120,14 @@ export function validateStat(obj: any, hashResolver?: (hash: string) => Observab
 
         if (typeof obj.source == "string") {
             if (/^[0-9a-zA-Z]{46}/.test(obj.source)) {
-                if (hashResolver) {
-                    return hashResolver(obj.source);
-                }
+                //don't resolve hash here
             } else {
                 return "source was not a valid hash"
             }
         } else if (typeof obj.source == "object") {
             let result = validateSource(obj.source);
             if (result) {
-                return result;
+                return "source: " + result;
             }
         } else {
             return "source was neither a string nor an object"

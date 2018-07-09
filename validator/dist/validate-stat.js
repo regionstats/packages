@@ -1,6 +1,18 @@
 import { validateData } from "./validate-data";
 import { validateSource } from "./validate-source";
-export function validateStat(obj, hashResolver) {
+import { of } from 'rxjs';
+import { take, concatMap } from 'rxjs/operators';
+export function validateStatAsync(obj, hashResolver) {
+    var syncResult = validateStat(obj);
+    if (syncResult) {
+        return of(syncResult);
+    }
+    if (typeof obj.source == "string" && /^[0-9a-zA-Z]{46}/.test(obj.source)) {
+        return hashResolver(obj.source).pipe(take(1), concatMap(function (obj) { return validateSource(obj); }));
+    }
+    return of(null);
+}
+export function validateStat(obj) {
     if (typeof obj != "object") {
         return "not an object";
     }
@@ -102,9 +114,7 @@ export function validateStat(obj, hashResolver) {
     if (obj.hasOwnProperty("source")) {
         if (typeof obj.source == "string") {
             if (/^[0-9a-zA-Z]{46}/.test(obj.source)) {
-                if (hashResolver) {
-                    return hashResolver(obj.source);
-                }
+                //don't resolve hash here
             }
             else {
                 return "source was not a valid hash";
@@ -113,7 +123,7 @@ export function validateStat(obj, hashResolver) {
         else if (typeof obj.source == "object") {
             var result = validateSource(obj.source);
             if (result) {
-                return result;
+                return "source: " + result;
             }
         }
         else {
