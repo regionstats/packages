@@ -1,0 +1,13 @@
+{
+    "name": "@regionstats/models",
+    "version": "1.0.0",
+    "description": "Typescript models for regionstats objects",
+    "main": "dist/commonjs/index.js",
+    "browser": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc && tsc --project ./tsconfig-commonjs"
+    },
+    "author": "Josh Pearson",
+    "license": "ISC"
+}
