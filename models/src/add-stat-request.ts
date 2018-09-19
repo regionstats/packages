@@ -1,4 +1,4 @@
-import { Stat } from "@regionstats/models";
+import { Stat } from "./stat";
 
 export class AddStatRequest {
     name: string;
