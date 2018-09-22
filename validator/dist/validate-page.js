@@ -1,17 +1,26 @@
-import { validateStat } from "./validate-stat";
+import { validateStat, validateStatAsync } from "./validate-stat";
 import { of, forkJoin } from 'rxjs';
 import { take, concatMap, map } from 'rxjs/operators';
 export function validatePageAsync(obj, hashResolver) {
-    var syncResult = validatePage(obj);
-    if (syncResult) {
-        return of(syncResult);
-    }
     var observables = [];
-    for (var i = 0; i < obj.stats.length; i++) {
+    var _loop_1 = function (i) {
         var stat = obj.stats[i];
+        var obs = void 0;
         if (typeof stat == "string" && /^[0-9a-zA-Z]{46}/.test(stat)) {
-            observables.push(hashResolver(stat).pipe(take(1), concatMap(function (obj) { return validateStat(obj); })));
+            obs = hashResolver(stat).pipe(take(1), concatMap(function (obj) { return validateStatAsync(obj, hashResolver); }));
         }
+        else {
+            obs = validateStatAsync(stat, hashResolver);
+        }
+        observables.push(obs.pipe(map(function (err) {
+            if (err) {
+                return "stat " + (i + 1) + ": " + err;
+            }
+            return null;
+        })));
+    };
+    for (var i = 0; i < obj.stats.length; i++) {
+        _loop_1(i);
     }
     if (observables.length) {
         if (observables.length) {
@@ -24,7 +33,7 @@ export function validatePage(obj) {
     if (typeof obj != "object") {
         return "not an object";
     }
-    if (!obj.hasOwnProperty("stats")) {
+    if (!obj.hasOwnProperty("stats") || obj.stats == null) {
         return "missing stats property";
     }
     if (!Array.isArray(obj.stats)) {

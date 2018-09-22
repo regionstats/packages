@@ -23,7 +23,7 @@ export function validateStat(obj: any): string {
         return "not an object"
     }
     //TITLE
-    if (!obj.hasOwnProperty("title")) {
+    if (!obj.hasOwnProperty("title") || obj.title == null) {
         return "missing title property"
     }
     if (typeof obj.title != "string") {
@@ -36,7 +36,7 @@ export function validateStat(obj: any): string {
         return "title is over 200 characters"
     }
     //REGION NAME
-    if (!obj.hasOwnProperty("regionName")) {
+    if (!obj.hasOwnProperty("regionName") || obj.regionName == null) {
         return "missing regionName property"
     }
     if (typeof obj.regionName != "string") {
@@ -49,7 +49,7 @@ export function validateStat(obj: any): string {
         return "regionName is over 50 characters"
     }
     //REGION TYPE
-    if (!obj.hasOwnProperty("regionType")) {
+    if (!obj.hasOwnProperty("regionType") || obj.regionType == null) {
         return "missing regionType property"
     }
     if (typeof obj.regionType != "string") {
@@ -62,7 +62,7 @@ export function validateStat(obj: any): string {
         return "regionType is over 20 characters"
     }
     //DATA
-    if (!obj.hasOwnProperty("data")) {
+    if (!obj.hasOwnProperty("data") || obj.data == null) {
         return "missing data property"
     }
     if (!Array.isArray(obj.data)) {

@@ -1,22 +1,29 @@
-import { validateStat } from "./validate-stat";
+import { validateStat, validateStatAsync } from "./validate-stat";
 import { Observable, of, forkJoin } from 'rxjs';
-import { take, concatMap, map } from 'rxjs/operators'
+import { take, concatMap, map, tap } from 'rxjs/operators'
 
 
 export function validatePageAsync(obj: any, hashResolver: (hash: string) => Observable<any>): Observable<string> {
-    var syncResult = validatePage(obj);
-    if (syncResult) {
-        return of(syncResult);
-    }
     var observables: Observable<string>[] = [];
     for (let i = 0; i < obj.stats.length; i++) {
         let stat = obj.stats[i];
+        let obs: Observable<string>;
         if (typeof stat == "string" && /^[0-9a-zA-Z]{46}/.test(stat)) {
-            observables.push(hashResolver(stat).pipe(
+            obs = hashResolver(stat).pipe(
                 take(1),
-                concatMap(obj => validateStat(obj)))
-            )
+                concatMap(obj => validateStatAsync(obj, hashResolver))
+            );
+        } else {
+            obs = validateStatAsync(stat, hashResolver);
         }
+        observables.push(obs.pipe(
+            map(err => {
+                if (err){
+                    return "stat " + (i + 1) + ": " + err;
+                }
+                return null;
+            })
+        ))
     }
     if (observables.length) {
         if (observables.length) {
@@ -31,7 +38,7 @@ export function validatePage(obj: any): string {
     if (typeof obj != "object") {
         return "not an object"
     }
-    if (!obj.hasOwnProperty("stats")) {
+    if (!obj.hasOwnProperty("stats") || obj.stats == null) {
         return "missing stats property"
     }
     if (!Array.isArray(obj.stats)) {

@@ -4,7 +4,7 @@ export function validateSource(obj: any): string {
         return "not an object"
     }
     //TITLE
-    if (!obj.hasOwnProperty("title")) {
+    if (!obj.hasOwnProperty("title") || obj.title == null) {
         return "missing title property"
     }
     if (typeof obj.title != "string") {

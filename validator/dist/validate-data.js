@@ -3,14 +3,14 @@ export function validateData(obj) {
         return "not an object";
     }
     //VALUE
-    if (!obj.hasOwnProperty("v")) {
+    if (!obj.hasOwnProperty("v") || obj.v == null) {
         return "missing v property";
     }
     if (typeof obj.v != "number") {
         return "v is not a number";
     }
     //REGION
-    if (!obj.hasOwnProperty("r")) {
+    if (!obj.hasOwnProperty("r") || obj.r == null) {
         return "missing r property";
     }
     if (typeof obj.r != "string") {
