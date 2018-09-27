@@ -1,75 +1,111 @@
 import { validateData } from "./validate-data";
 import { validateSource } from "./validate-source";
-import { of } from 'rxjs';
-import { take, concatMap } from 'rxjs/operators';
-export function validateStatAsync(obj, hashResolver) {
-    var syncResult = validateStat(obj);
-    if (syncResult) {
-        return of(syncResult);
+import { of, forkJoin } from 'rxjs';
+import { take, concatMap, map } from 'rxjs/operators';
+export function validateStatArrayAsync(stats, hashResolver) {
+    if (!Array.isArray(stats)) {
+        return of("not an array");
     }
-    if (typeof obj.source == "string" && /^[0-9a-zA-Z]{46}/.test(obj.source)) {
-        return hashResolver(obj.source).pipe(take(1), concatMap(function (obj) { return validateSource(obj); }));
+    var observables = [];
+    var _loop_1 = function (i) {
+        var stat = stats[i];
+        var obs = void 0;
+        if (typeof stat == "string") {
+            if (/^[0-9a-zA-Z]{46}/.test(stat)) {
+                obs = hashResolver(stat).pipe(take(1), concatMap(function (obj) { return validateStatAsync(obj, hashResolver); }));
+            }
+            else {
+                obs = of("neither an object nor a valid hash");
+            }
+        }
+        else {
+            obs = validateStatAsync(stat, hashResolver);
+        }
+        observables.push(obs.pipe(map(function (err) {
+            if (err) {
+                return "stat " + (i + 1) + ": " + err;
+            }
+            return null;
+        })));
+    };
+    for (var i = 0; i < stats.length; i++) {
+        _loop_1(i);
+    }
+    if (observables.length) {
+        if (observables.length) {
+            return forkJoin(observables).pipe(map(function (arr) { return arr.find(function (str) { return str; }); }));
+        }
     }
     return of(null);
 }
-export function validateStat(obj) {
-    if (typeof obj != "object") {
+export function validateStatAsync(stat, hashResolver) {
+    var syncResult = validateStat(stat);
+    if (syncResult) {
+        return of(syncResult);
+    }
+    if (typeof stat.source == "string" && /^[0-9a-zA-Z]{46}/.test(stat.source)) {
+        return hashResolver(stat.source).pipe(take(1), concatMap(function (obj) { return validateSource(obj); }));
+    }
+    return of(null);
+}
+export function validateStat(stat) {
+    if (typeof stat != "object") {
         return "not an object";
     }
     //TITLE
-    if (!obj.hasOwnProperty("title") || obj.title == null) {
+    if (!stat.hasOwnProperty("title") || stat.title == null) {
         return "missing title property";
     }
-    if (typeof obj.title != "string") {
+    if (typeof stat.title != "string") {
         return "title is not a string";
     }
-    if (obj.title.length == 0) {
+    if (stat.title.length == 0) {
         return "title is empty";
     }
-    if (obj.title.length > 200) {
+    if (stat.title.length > 200) {
         return "title is over 200 characters";
     }
     //REGION NAME
-    if (!obj.hasOwnProperty("regionName") || obj.regionName == null) {
+    if (!stat.hasOwnProperty("regionName") || stat.regionName == null) {
         return "missing regionName property";
     }
-    if (typeof obj.regionName != "string") {
+    if (typeof stat.regionName != "string") {
         return "regionName is not a string";
     }
-    if (obj.regionName.length == 0) {
+    if (stat.regionName.length == 0) {
         return "regionName is empty";
     }
-    if (obj.regionName.length > 50) {
+    if (stat.regionName.length > 50) {
         return "regionName is over 50 characters";
     }
     //REGION TYPE
-    if (!obj.hasOwnProperty("regionType") || obj.regionType == null) {
+    if (!stat.hasOwnProperty("regionType") || stat.regionType == null) {
         return "missing regionType property";
     }
-    if (typeof obj.regionType != "string") {
+    if (typeof stat.regionType != "string") {
         return "regionType is not a string";
     }
-    if (obj.regionType.length == 0) {
+    if (stat.regionType.length == 0) {
         return "regionType is empty";
     }
-    if (obj.regionType.length > 20) {
+    if (stat.regionType.length > 20) {
         return "regionType is over 20 characters";
     }
     //DATA
-    if (!obj.hasOwnProperty("data") || obj.data == null) {
+    if (!stat.hasOwnProperty("data") || stat.data == null) {
         return "missing data property";
     }
-    if (!Array.isArray(obj.data)) {
+    if (!Array.isArray(stat.data)) {
         return "data is not an array";
     }
-    if (obj.data.length == 0) {
+    if (stat.data.length == 0) {
         return "data is empty";
     }
-    if (obj.data.length > 5000) {
-        return "data array has over 5000 items";
+    if (stat.data.length > 10000) {
+        return "data array has over 10000 items";
     }
-    for (var i = 0; i < obj.data.length; i++) {
-        var data = obj.data[i];
+    for (var i = 0; i < stat.data.length; i++) {
+        var data = stat.data[i];
         if (typeof data == "object") {
             var result = validateData(data);
             if (result) {
@@ -81,47 +117,47 @@ export function validateStat(obj) {
         }
     }
     //REGION MAP
-    if (obj.hasOwnProperty("regionMap")) {
-        if (typeof obj.regionMap != "string") {
+    if (stat.hasOwnProperty("regionMap")) {
+        if (typeof stat.regionMap != "string") {
             return "regionMap is not a string";
         }
-        if (!/^[0-9a-zA-Z]{46}/.test(obj.regionMap)) {
+        if (!/^[0-9a-zA-Z]{46}/.test(stat.regionMap)) {
             return "regionMap was not a valid hash";
         }
     }
     //REGION INTERMEDIARY
-    if (obj.hasOwnProperty("regionIntermediary")) {
-        if (typeof obj.regionIntermediary != "string") {
+    if (stat.hasOwnProperty("regionIntermediary")) {
+        if (typeof stat.regionIntermediary != "string") {
             return "regionIntermediary is not a string";
         }
-        if (obj.regionIntermediary.length == 0) {
+        if (stat.regionIntermediary.length == 0) {
             return "regionIntermediary is empty";
         }
-        if (obj.regionIntermediary.length > 20) {
+        if (stat.regionIntermediary.length > 20) {
             return "regionIntermediary is over 20 characters";
         }
     }
     //YEAR
-    if (obj.hasOwnProperty("year")) {
-        if (typeof obj.year != "number") {
+    if (stat.hasOwnProperty("year")) {
+        if (typeof stat.year != "number") {
             return "year is not a number";
         }
-        if (obj.year < 1000 || obj.year > 3000) {
+        if (stat.year < 1000 || stat.year > 3000) {
             return "year is not in the valid range";
         }
     }
     //SOURCE
-    if (obj.hasOwnProperty("source")) {
-        if (typeof obj.source == "string") {
-            if (/^[0-9a-zA-Z]{46}/.test(obj.source)) {
+    if (stat.hasOwnProperty("source")) {
+        if (typeof stat.source == "string") {
+            if (/^[0-9a-zA-Z]{46}/.test(stat.source)) {
                 //don't resolve hash here
             }
             else {
                 return "source was not a valid hash";
             }
         }
-        else if (typeof obj.source == "object") {
-            var result = validateSource(obj.source);
+        else if (typeof stat.source == "object") {
+            var result = validateSource(stat.source);
             if (result) {
                 return "source: " + result;
             }

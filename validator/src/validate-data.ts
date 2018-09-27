@@ -1,37 +1,38 @@
+import { Data } from "@regionstats/models";
 
-export function validateData(obj: any): string {
-    if (typeof obj != "object") {
+export function validateData(data: Data): string {
+    if (typeof data != "object") {
         return "not an object"
     }
     //VALUE
-    if (!obj.hasOwnProperty("v") || obj.v == null) {
+    if (!data.hasOwnProperty("v") || data.v == null) {
         return "missing v property"
     }
-    if (typeof obj.v != "number") {
+    if (typeof data.v != "number") {
         return "v is not a number"
     }
     //REGION
-    if (!obj.hasOwnProperty("r") || obj.r == null) {
+    if (!data.hasOwnProperty("r") || data.r == null) {
         return "missing r property"
     }
-    if (typeof obj.r != "string") {
+    if (typeof data.r != "string") {
         return "r is not a string"
     }
-    if (obj.r.length == 0) {
+    if (data.r.length == 0) {
         return "r is empty"
     }
-    if (obj.r.length > 50) {
+    if (data.r.length > 50) {
         return "r is over 50 characters"
     }
     //INTERMEDIARY
-    if (obj.hasOwnProperty("i")) {
-        if (typeof obj.i != "string") {
+    if (data.hasOwnProperty("i")) {
+        if (typeof data.i != "string") {
             return "i is not a string"
         }
-        if (obj.r.length == 0) {
+        if (data.r.length == 0) {
             return "i is empty"
         }
-        if (obj.r.length > 50) {
+        if (data.r.length > 50) {
             return "i is over 50 characters"
         }
     }

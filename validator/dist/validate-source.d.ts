@@ -1,1 +1,2 @@
-export declare function validateSource(obj: any): string;
+import { Source } from "@regionstats/models";
+export declare function validateSource(source: Source): string;

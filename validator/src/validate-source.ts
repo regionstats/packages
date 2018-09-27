@@ -1,48 +1,49 @@
+import { Source } from "@regionstats/models";
 
-export function validateSource(obj: any): string {
-    if (typeof obj != "object") {
+export function validateSource(source: Source): string {
+    if (typeof source != "object") {
         return "not an object"
     }
     //TITLE
-    if (!obj.hasOwnProperty("title") || obj.title == null) {
+    if (!source.hasOwnProperty("title") || source.title == null) {
         return "missing title property"
     }
-    if (typeof obj.title != "string") {
+    if (typeof source.title != "string") {
         return "title is not a string"
     }
-    if (obj.title.length == 0) {
+    if (source.title.length == 0) {
         return "title is empty"
     }
-    if (obj.title.length > 50) {
+    if (source.title.length > 50) {
         return "title is over 200 characters"
     }
     //YEAR
-    if (obj.hasOwnProperty("year")) {
-        if (typeof obj.year != "number") {
+    if (source.hasOwnProperty("year")) {
+        if (typeof source.year != "number") {
             return "year is not a number"
         }
-        if (obj.year < 1000 || obj.year > 3000) {
+        if (source.year < 1000 || source.year > 3000) {
             return "year is not in the valid range"
         }
     }
     //PUBLISHER
-    if (obj.hasOwnProperty("publisher")) {
-        if (typeof obj.publisher != "string") {
+    if (source.hasOwnProperty("publisher")) {
+        if (typeof source.publisher != "string") {
             return "publisher is not a string"
         }
-        if (obj.publisher.length == 0) {
+        if (source.publisher.length == 0) {
             return "publisher is empty"
         }
-        if (obj.publisher.length > 100) {
+        if (source.publisher.length > 100) {
             return "publisher is over 100 characters"
         }
     }
     //URL
-    if (obj.hasOwnProperty("url")) {
-        if (typeof obj.url != "string") {
+    if (source.hasOwnProperty("url")) {
+        if (typeof source.url != "string") {
             return "url is not a string"
         }
-        if (/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(obj.url)) {
+        if (/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(source.url)) {
             return "url is not a valid URL"
         }
     }
