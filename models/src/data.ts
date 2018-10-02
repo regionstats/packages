@@ -14,7 +14,9 @@ export class Data {
             return;
         }
         for (var key in primitiveProps){
-            this[key] = data[key];
+            if (data[key] != null){
+                this[key] = data[key];
+            }
         }
     }
 

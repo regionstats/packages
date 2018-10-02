@@ -26,7 +26,9 @@ export class Stat {
             return;
         }
         for (var key in primitiveProps){
-            this[key] = stat[key];
+            if (stat[key] != null){
+                this[key] = stat[key];
+            }
         }
         if (Array.isArray(stat.data)){
             this.data = stat.data.map(z => new Data(z));

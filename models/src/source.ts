@@ -16,7 +16,9 @@ export class Source {
             return;
         }
         for (var key in primitiveProps){
-            this[key] = source[key];
+            if (source[key] != null){
+                this[key] = source[key];
+            }
         }
     }
 
