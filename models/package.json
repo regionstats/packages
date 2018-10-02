@@ -1,6 +1,6 @@
 {
     "name": "@regionstats/models",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Typescript models for regionstats objects",
     "main": "dist/commonjs/index.js",
     "browser": "dist/index.js",

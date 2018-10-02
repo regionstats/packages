@@ -25,7 +25,7 @@ export function validateData(data: Data): string {
         return "r is over 50 characters"
     }
     //INTERMEDIARY
-    if (data.hasOwnProperty("i")) {
+    if (data.hasOwnProperty("i") && data.i != null) {
         if (typeof data.i != "string") {
             return "i is not a string"
         }

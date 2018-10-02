@@ -18,7 +18,7 @@ export function validateSource(source: Source): string {
         return "title is over 200 characters"
     }
     //YEAR
-    if (source.hasOwnProperty("year")) {
+    if (source.hasOwnProperty("year") && source.year != null) {
         if (typeof source.year != "number") {
             return "year is not a number"
         }
@@ -27,7 +27,7 @@ export function validateSource(source: Source): string {
         }
     }
     //PUBLISHER
-    if (source.hasOwnProperty("publisher")) {
+    if (source.hasOwnProperty("publisher") && source.publisher != null) {
         if (typeof source.publisher != "string") {
             return "publisher is not a string"
         }
@@ -39,7 +39,7 @@ export function validateSource(source: Source): string {
         }
     }
     //URL
-    if (source.hasOwnProperty("url")) {
+    if (source.hasOwnProperty("url") && source.url != null) {
         if (typeof source.url != "string") {
             return "url is not a string"
         }

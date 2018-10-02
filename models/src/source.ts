@@ -11,18 +11,18 @@ export class Source {
     publisher: string;
     url: string;
 
-    constructor(obj: any){
-        if (typeof obj != "object"){
+    constructor(source?: Source){
+        if (typeof source != "object"){
             return;
         }
         for (var key in primitiveProps){
-            this[key] = obj[key];
+            this[key] = source[key];
         }
     }
 
     static clean(source: Source): void{
         for (var key in source){
-            if (!primitiveProps[key]){
+            if (!primitiveProps[key] || source[key] == null){
                 delete source[key];
             }
         }

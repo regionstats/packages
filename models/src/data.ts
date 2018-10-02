@@ -9,18 +9,18 @@ export class Data {
     r: string;
     i: string;
     
-    constructor(obj: any){
-        if (typeof obj != "object"){
+    constructor(data?: Data){
+        if (typeof data != "object"){
             return;
         }
         for (var key in primitiveProps){
-            this[key] = obj[key];
+            this[key] = data[key];
         }
     }
 
     static clean(data: Data): void{
         for (var key in data){
-            if (!primitiveProps[key]){
+            if (!primitiveProps[key] || data[key] == null){
                 delete data[key];
             }
         }

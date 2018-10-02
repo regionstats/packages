@@ -117,7 +117,7 @@ export function validateStat(stat) {
         }
     }
     //REGION MAP
-    if (stat.hasOwnProperty("regionMap")) {
+    if (stat.hasOwnProperty("regionMap") && stat.regionMap != null) {
         if (typeof stat.regionMap != "string") {
             return "regionMap is not a string";
         }
@@ -126,7 +126,7 @@ export function validateStat(stat) {
         }
     }
     //REGION INTERMEDIARY
-    if (stat.hasOwnProperty("regionIntermediary")) {
+    if (stat.hasOwnProperty("regionIntermediary") && stat.regionIntermediary != null) {
         if (typeof stat.regionIntermediary != "string") {
             return "regionIntermediary is not a string";
         }
@@ -138,7 +138,7 @@ export function validateStat(stat) {
         }
     }
     //YEAR
-    if (stat.hasOwnProperty("year")) {
+    if (stat.hasOwnProperty("year") && stat.year != null) {
         if (typeof stat.year != "number") {
             return "year is not a number";
         }
@@ -147,7 +147,7 @@ export function validateStat(stat) {
         }
     }
     //SOURCE
-    if (stat.hasOwnProperty("source")) {
+    if (stat.hasOwnProperty("source") && stat.source != null) {
         if (typeof stat.source == "string") {
             if (/^[0-9a-zA-Z]{46}/.test(stat.source)) {
                 //don't resolve hash here
