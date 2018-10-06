@@ -43,7 +43,7 @@ export function validateSource(source: Source): string {
         if (typeof source.url != "string") {
             return "url is not a string"
         }
-        if (/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(source.url)) {
+        if (!/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(source.url)) {
             return "url is not a valid URL"
         }
     }

@@ -1,6 +1,6 @@
 {
     "name": "@regionstats/validator",
-    "version": "1.4.2",
+    "version": "1.4.3",
     "description": "A validator class",
     "main": "dist/commonjs/index.js",
     "browser": "dist/index.js",
